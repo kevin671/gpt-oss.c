@@ -4,7 +4,7 @@ import os
 
 import torch
 
-from model import ModelArgs, Transformer
+from model import Transformer
 
 
 def model_expoert(model, filepath, version=0, dtype=torch.float32):
@@ -12,29 +12,8 @@ def model_expoert(model, filepath, version=0, dtype=torch.float32):
 
 
 def load_gpt_oss_model(model_path):
-    config = ModelArgs()
-    config_path = os.path.join(model_path, "config.json")
-    with open(config_path, "r") as f:
-        params = json.load(f)
-    config.dim = params["hidden_size"]
-    config.n_layers = params["num_hidden_layers"]
-    config.n_experts = params["num_experts"]
-    config.experts_per_token = params["experts_per_token"]
-    config.n_heads = params["num_attention_heads"]
-    config.n_kv_heads = params["num_key_value_heads"]
-    config.vocab_size = params["vocab_size"]
-    config.hidden_dim = params["intermediate_size"]
-    config.swiglu_limit = params["swiglu_limit"]
-    config.head_dim = params["head_dim"]
-    config.sliding_window = params["sliding_window"]
-    config.context_length = params["initial_context_length"]
-    config.rope_theta = params["rope_theta"]
-    config.rope_scaling_factor = params["rope_scaling_factor"]
-    config.rope_ntk_alpha = params["rope_ntk_alpha"]
-    config.rope_ntk_beta = params["rope_ntk_beta"]
+    model = Transformer.from_checkpoint(model_path, device="cpu")
 
-    model = Transformer(config)
-    # model = model.from_checkpoint(model_path)
     model.eval()
     return model
 
